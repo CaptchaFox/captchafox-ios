@@ -4,7 +4,7 @@ import UIKit
 /// indicator until the widget is loaded and dismisses itself on verify, error and close. In hidden mode it starts the
 /// verification once the widget is loaded and shows the widget only when a challenge opens.
 ///
-/// Set `backdropColor`, `headerView`, `footerView` and `loadingView` before presenting it.
+/// Set `backdropColor`, `headerView`, `footerView`, `loadingView` and `dismissDelayAfterVerify` before presenting it.
 @MainActor
 public final class CaptchaFoxModalViewController: UIViewController {
     public var onLoad: (() -> Void)?
@@ -35,6 +35,9 @@ public final class CaptchaFoxModalViewController: UIViewController {
     public var footerView: UIView?
     /// Shown in place of the activity indicator while the widget loads, and in hidden mode until the token arrives.
     public var loadingView: UIView?
+    /// How many seconds the modal stays after verify, so that the visitor sees the widget's success state; 0.5 by
+    /// default, 0 dismisses it at once. `onVerify` is called at once either way.
+    public var dismissDelayAfterVerify: TimeInterval = 0.5
 
     /// Called once when the modal dismisses itself.
     var onFinish: (() -> Void)?
@@ -74,13 +77,19 @@ public final class CaptchaFoxModalViewController: UIViewController {
 
         let widget = makeWidget()
         self.widget = widget
+        // The modal's own loading view stands in for the widget's.
+        widget.showsLoadingIndicator = false
         widget.alpha = 0
         widget.onLoad = { [weak self] in
             self?.widgetLoaded()
         }
         widget.onVerify = { [weak self] token in
-            self?.onVerify?(token)
-            self?.finish()
+            guard let self else {
+                return
+            }
+
+            onVerify?(token)
+            finish(after: dismissDelayAfterVerify)
         }
         widget.onError = { [weak self] message in
             self?.onError?(message)
@@ -210,13 +219,26 @@ public final class CaptchaFoxModalViewController: UIViewController {
         widget?.alpha = 1
     }
 
-    private func finish() {
+    /// Finishes at once and dismisses the modal after `delay`.
+    private func finish(after delay: TimeInterval = 0) {
         guard !isFinished else {
             return
         }
 
         isFinished = true
         execution?.cancel()
+        guard delay > 0 else {
+            dismissFinished()
+            return
+        }
+
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            self?.dismissFinished()
+        }
+    }
+
+    private func dismissFinished() {
         onFinish?()
         presentingViewController?.dismiss(animated: true)
     }

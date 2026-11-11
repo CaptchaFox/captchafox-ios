@@ -125,10 +125,15 @@ In SwiftUI:
 
 The backdrop is black at 60 % opacity by default, and the loading view an activity indicator.
 
+After verify, the modal stays for 0.5 seconds so that the user sees the widget's success state. Change it with
+`dismissDelayAfterVerify` (UIKit) or the parameter of the same name (SwiftUI); `0` closes the modal at once. `onVerify`
+is called at once either way.
+
 ### View
 
 `CaptchaFoxUIView` (UIKit) and `CaptchaFoxView` (SwiftUI) put the widget in your layout. `CaptchaFoxView` supports
-inline and popup; for hidden mode in SwiftUI, use `captchaFoxModal`. `CaptchaFoxUIView` also has `execute()`, which
+inline and popup; for hidden mode in SwiftUI, use `captchaFoxModal`. Both show an activity indicator until the widget
+has loaded; turn it off with `showsLoadingIndicator = false` (UIKit) or `showsLoadingIndicator: false` (SwiftUI). `CaptchaFoxUIView` also has `execute()`, which
 returns the token, and `reset()`:
 
 ```swift

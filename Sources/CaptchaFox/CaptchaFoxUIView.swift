@@ -18,7 +18,16 @@ public final class CaptchaFoxUIView: UIView {
     /// Called when a challenge opens, also in hidden mode.
     public var onChallengeOpen: (() -> Void)?
 
+    /// Whether an activity indicator shows until the widget is loaded or reports an error; `true` by default.
+    public var showsLoadingIndicator = true {
+        didSet {
+            updateLoadingIndicator()
+        }
+    }
+
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
     private let bridge: WidgetBridge
+    private var isLoading = true
 
     public convenience init(configuration: CaptchaFoxConfiguration) {
         self.init(bridge: WidgetBridge(configuration: configuration))
@@ -31,6 +40,13 @@ public final class CaptchaFoxUIView: UIView {
         bridge.webView.frame = bounds
         bridge.webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         addSubview(bridge.webView)
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(loadingIndicator)
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
+        ])
+        updateLoadingIndicator()
         bridge.onEvent = { [weak self] event in
             self?.deliver(event)
         }
@@ -53,7 +69,22 @@ public final class CaptchaFoxUIView: UIView {
         bridge.reset()
     }
 
+    private func updateLoadingIndicator() {
+        if showsLoadingIndicator && isLoading {
+            loadingIndicator.startAnimating()
+        } else {
+            loadingIndicator.stopAnimating()
+        }
+    }
+
     private func deliver(_ event: WidgetEvent) {
+        if case .load = event {
+            isLoading = false
+        } else if case .error = event {
+            isLoading = false
+        }
+        updateLoadingIndicator()
+
         switch event {
         case .load:
             onLoad?()

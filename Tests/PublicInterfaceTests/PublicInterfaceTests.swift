@@ -51,6 +51,8 @@ struct PublicInterfaceTests {
     @Test func uiKitView() async {
         let widget = CaptchaFoxUIView(configuration: configuration)
         let _: UIView = widget
+        #expect(widget.showsLoadingIndicator)
+        widget.showsLoadingIndicator = false
 
         widget.onLoad = {}
         widget.onVerify = { (_: String) in }
@@ -84,6 +86,8 @@ struct PublicInterfaceTests {
         captcha.headerView = UILabel()
         captcha.footerView = UILabel()
         captcha.loadingView = UIActivityIndicatorView()
+        #expect(captcha.dismissDelayAfterVerify == 0.5)
+        captcha.dismissDelayAfterVerify = 0
     }
 
     @Test func swiftUI() {
@@ -110,12 +114,14 @@ struct PublicInterfaceTests {
         )
         let minimal = VStack {
             CaptchaFoxView(configuration: configuration)
+            CaptchaFoxView(configuration: configuration, showsLoadingIndicator: false)
         }
         .captchaFoxModal(isPresented: .constant(false), configuration: configuration)
         let styled = Text("Sign up").captchaFoxModal(
             isPresented: .constant(false),
             configuration: configuration,
             backdropColor: .black.opacity(0.8),
+            dismissDelayAfterVerify: 1,
             header: { Text("Verify") },
             footer: { Text("Protected by CaptchaFox") },
             loading: { ProgressView() },

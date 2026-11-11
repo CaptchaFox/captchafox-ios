@@ -142,6 +142,36 @@ struct ModalTests {
         #expect(loadingView.isHidden)
     }
 
+    @Test func staysForAMomentAfterVerify() async throws {
+        var calls: [String] = []
+        let (modal, harness) = makeModal(mode: nil) { modal in
+            modal.dismissDelayAfterVerify = 0.3
+            modal.onLoad = { calls.append("onLoad") }
+            modal.onVerify = { _ in calls.append("onVerify") }
+            modal.onClose = { calls.append("onClose") }
+            modal.onFinish = { calls.append("finish") }
+        }
+        try await until { calls == ["onLoad"] }
+
+        try await harness.widgetCalls("onVerify", ["token-1"])
+        try await until { calls.count == 2 }
+        // The widget's close in the meantime finishes the modal no sooner, and not twice.
+        try await harness.widgetCalls("onClose")
+        try await until { calls.count == 3 }
+        #expect(calls == ["onLoad", "onVerify", "onClose"])
+
+        try await until { calls.count == 4 }
+        #expect(calls == ["onLoad", "onVerify", "onClose", "finish"])
+        // The modal is used only through its callbacks; without this, Swift may release it before they come.
+        withExtendedLifetime(modal) {}
+    }
+
+    @Test func theWidgetShowsNoIndicatorOfItsOwn() throws {
+        let (modal, _) = makeModal(mode: nil)
+
+        #expect(try #require(modal.widget).showsLoadingIndicator == false)
+    }
+
     /// A modal whose widget runs on the harness's page; the harness's own events stop, the modal's callbacks report them.
     private func makeModal(
         mode: CaptchaFoxConfiguration.Mode?,
@@ -151,6 +181,7 @@ struct ModalTests {
         let modal = CaptchaFoxModalViewController(mode: mode) {
             CaptchaFoxUIView(bridge: harness.bridge)
         }
+        modal.dismissDelayAfterVerify = 0
         load(modal)
         modal.loadViewIfNeeded()
         return (modal, harness)

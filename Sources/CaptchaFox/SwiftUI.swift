@@ -3,9 +3,11 @@ import SwiftUI
 /// The CaptchaFox widget as a SwiftUI view. A changed configuration loads the widget anew.
 public struct CaptchaFoxView: View {
     private let configuration: CaptchaFoxConfiguration
+    private let showsLoadingIndicator: Bool
     private let callbacks: Callbacks
 
     /// - Parameters:
+    ///   - showsLoadingIndicator: Whether an activity indicator shows until the widget is loaded or reports an error.
     ///   - onVerify: Called with the token, which your backend verifies.
     ///   - onError: Called with the widget's error message.
     ///   - onFail: Called when the visitor failed the challenge.
@@ -14,6 +16,7 @@ public struct CaptchaFoxView: View {
     ///   - onChallengeOpen: Called when a challenge opens, also in hidden mode.
     public init(
         configuration: CaptchaFoxConfiguration,
+        showsLoadingIndicator: Bool = true,
         onLoad: (() -> Void)? = nil,
         onVerify: ((String) -> Void)? = nil,
         onError: ((String) -> Void)? = nil,
@@ -23,6 +26,7 @@ public struct CaptchaFoxView: View {
         onChallengeOpen: (() -> Void)? = nil
     ) {
         self.configuration = configuration
+        self.showsLoadingIndicator = showsLoadingIndicator
         callbacks = Callbacks(
             onLoad: onLoad,
             onVerify: onVerify,
@@ -35,7 +39,7 @@ public struct CaptchaFoxView: View {
     }
 
     public var body: some View {
-        WidgetRepresentable(configuration: configuration, callbacks: callbacks)
+        WidgetRepresentable(configuration: configuration, showsLoadingIndicator: showsLoadingIndicator, callbacks: callbacks)
             .id(configuration)
     }
 }
@@ -46,6 +50,8 @@ extension View {
     ///
     /// - Parameters:
     ///   - backdropColor: The colour over the current screen.
+    ///   - dismissDelayAfterVerify: How many seconds the modal stays after verify, so that the visitor sees the
+    ///     widget's success state; 0 dismisses it at once. `onVerify` is called at once either way.
     ///   - header: A view above the widget, such as a title.
     ///   - footer: A view below the widget.
     ///   - loading: Shown in place of the activity indicator while the widget loads, and in hidden mode until the token
@@ -60,6 +66,7 @@ extension View {
         isPresented: Binding<Bool>,
         configuration: CaptchaFoxConfiguration,
         backdropColor: Color = Color.black.opacity(0.6),
+        dismissDelayAfterVerify: TimeInterval = 0.5,
         @ViewBuilder header: () -> Header = { EmptyView() },
         @ViewBuilder footer: () -> Footer = { EmptyView() },
         @ViewBuilder loading: () -> Loading = { EmptyView() },
@@ -76,6 +83,7 @@ extension View {
             configuration: configuration,
             style: ModalStyle(
                 backdropColor: UIColor(backdropColor),
+                dismissDelayAfterVerify: dismissDelayAfterVerify,
                 header: ModalStyle.content(header()),
                 footer: ModalStyle.content(footer()),
                 loading: ModalStyle.content(loading())
@@ -127,6 +135,7 @@ private struct Callbacks {
 
 private struct WidgetRepresentable: UIViewRepresentable {
     let configuration: CaptchaFoxConfiguration
+    let showsLoadingIndicator: Bool
     let callbacks: Callbacks
 
     func makeUIView(context: Context) -> CaptchaFoxUIView {
@@ -134,6 +143,7 @@ private struct WidgetRepresentable: UIViewRepresentable {
     }
 
     func updateUIView(_ view: CaptchaFoxUIView, context: Context) {
+        view.showsLoadingIndicator = showsLoadingIndicator
         callbacks.assign(to: view)
     }
 }
@@ -141,6 +151,7 @@ private struct WidgetRepresentable: UIViewRepresentable {
 /// The modal's backdrop colour and the SwiftUI views it shows in place of none or of its activity indicator.
 private struct ModalStyle {
     var backdropColor: UIColor
+    var dismissDelayAfterVerify: TimeInterval
     var header: AnyView?
     var footer: AnyView?
     var loading: AnyView?
@@ -176,6 +187,7 @@ private struct ModalPresenter: UIViewControllerRepresentable {
         if let modal = coordinator.modal {
             callbacks.assign(to: modal)
             modal.backdropColor = style.backdropColor
+            modal.dismissDelayAfterVerify = style.dismissDelayAfterVerify
             for (keyPath, host) in coordinator.hosts {
                 if let content = style[keyPath: keyPath] {
                     host.rootView = content
@@ -195,6 +207,7 @@ private struct ModalPresenter: UIViewControllerRepresentable {
         let modal = CaptchaFoxModalViewController(configuration: configuration)
         callbacks.assign(to: modal)
         modal.backdropColor = style.backdropColor
+        modal.dismissDelayAfterVerify = style.dismissDelayAfterVerify
         coordinator.hosts = [:]
         let slots: [(KeyPath<ModalStyle, AnyView?>, ReferenceWritableKeyPath<CaptchaFoxModalViewController, UIView?>)] = [
             (\.header, \.headerView),

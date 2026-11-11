@@ -142,17 +142,26 @@ func keepAwake(_ webView: WKWebView) {
 /// Waits until the condition holds. On the first boot of a new simulator device, WebKit's processes take more than a
 /// minute to launch.
 @MainActor
-func until(timeout: TimeInterval = 180, _ condition: () async throws -> Bool) async throws {
+func until(
+    timeout: TimeInterval = 180,
+    file: String = #fileID,
+    line: Int = #line,
+    _ condition: () async throws -> Bool
+) async throws {
     let deadline = Date().addingTimeInterval(timeout)
     while try await !condition() {
         guard Date() < deadline else {
-            throw WaitTimeout()
+            throw WaitTimeout(file: file, line: line)
         }
         try await Task.sleep(nanoseconds: 10_000_000)
     }
 }
 
-struct WaitTimeout: Error {}
+/// Names the wait that timed out.
+struct WaitTimeout: Error {
+    let file: String
+    let line: Int
+}
 
 @MainActor
 private final class OpenedURLs {
