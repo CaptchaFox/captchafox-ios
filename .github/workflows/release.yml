@@ -1,0 +1,50 @@
+name: Release
+
+# Runs when a version tag is pushed: creates the GitHub release. Swift Package Manager takes the version from the tag
+# itself. Tags on a commit that is not on main, or without an entry in the changelog, are refused before the release.
+on:
+  push:
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+concurrency: release
+
+jobs:
+  release:
+    name: Release ${{ github.ref_name }}
+    runs-on: macos-26
+    permissions:
+      # Creates the GitHub release.
+      contents: write
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history, so that the check below can see whether the tag is on main.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check that the tag points to a commit on main
+        run: |
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "::error::${GITHUB_REF_NAME} points to $(git rev-parse --short HEAD), which is not on main. Tag the tested commit on main."
+            exit 1
+          fi
+
+      - name: Check the changelog
+        run: .github/scripts/check-release.sh "$GITHUB_REF_NAME" "$RUNNER_TEMP/notes.md"
+
+      - name: Test
+        run: make test
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --title "CaptchaFox for iOS ${GITHUB_REF_NAME}" \
+            --notes-file "$RUNNER_TEMP/notes.md"

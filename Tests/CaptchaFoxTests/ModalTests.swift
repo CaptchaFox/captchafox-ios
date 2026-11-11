@@ -1,0 +1,113 @@
+import Testing
+import UIKit
+@testable import CaptchaFox
+
+@MainActor
+struct ModalTests {
+    @Test func showsTheWidgetOnceItIsLoaded() async throws {
+        let (modal, harness) = makeModal(mode: nil)
+        var loaded = false
+        modal.onLoad = { loaded = true }
+
+        #expect(modal.widget?.alpha == 0)
+        #expect(modal.loadingIndicator.isAnimating)
+        try await until { loaded }
+
+        #expect(modal.widget?.alpha == 1)
+        #expect(!modal.loadingIndicator.isAnimating)
+        #expect(try await harness.executionCount() == 0)
+    }
+
+    @Test func inHiddenModeExecutesOnLoadAndShowsTheWidgetOnlyForAChallenge() async throws {
+        let (modal, harness) = makeModal(mode: .hidden)
+        var challengeOpened = false
+        modal.onChallengeOpen = { challengeOpened = true }
+
+        try await until { try await harness.page("return window.fake && window.fake.executions") as? Int == 1 }
+        #expect(modal.widget?.alpha == 0)
+        #expect(modal.loadingIndicator.isAnimating)
+
+        try await harness.widgetCalls("onChallengeOpen")
+        try await until { challengeOpened }
+        #expect(modal.widget?.alpha == 1)
+        // The indicator stays below the web view, for the time between the challenge and the token.
+        #expect(modal.loadingIndicator.isAnimating)
+        let widget = try #require(modal.widget)
+        let indicatorIndex = try #require(modal.view.subviews.firstIndex(of: modal.loadingIndicator))
+        let widgetIndex = try #require(modal.view.subviews.firstIndex(of: widget))
+        #expect(indicatorIndex < widgetIndex)
+    }
+
+    @Test(arguments: [("onVerify", ["token-1"]), ("onError", ["Something failed"]), ("onClose", [])])
+    func finishesOn(_ callback: String, _ arguments: [String]) async throws {
+        let (modal, harness) = makeModal(mode: nil)
+        var calls: [String] = []
+        modal.onLoad = { calls.append("onLoad") }
+        modal.onFail = { calls.append("onFail") }
+        modal.onExpire = { calls.append("onExpire") }
+        modal.onVerify = { _ in calls.append("onVerify") }
+        modal.onError = { _ in calls.append("onError") }
+        modal.onClose = { calls.append("onClose") }
+        modal.onFinish = { calls.append("finish") }
+        try await until { calls == ["onLoad"] }
+
+        try await harness.widgetCalls("onFail")
+        try await harness.widgetCalls("onExpire")
+        try await harness.widgetCalls(callback, arguments)
+        try await harness.widgetCalls(callback, arguments)
+        try await until { calls.count == 6 }
+
+        #expect(calls == ["onLoad", "onFail", "onExpire", callback, "finish", callback])
+    }
+
+    @Test func inHiddenModeAFailedExecutionFinishesTheModal() async throws {
+        let (modal, harness) = makeModal(mode: .hidden)
+        var calls: [String] = []
+        modal.onError = { calls.append("onError \($0)") }
+        modal.onFinish = { calls.append("finish") }
+        try await until { try await harness.page("return window.fake && window.fake.executions") as? Int == 1 }
+
+        try await harness.page("window.fake.rejectExecution(new Error('challenge-aborted'))")
+        try await until { calls.count == 2 }
+
+        #expect(calls == ["onError challenge-aborted", "finish"])
+    }
+
+    @Test func inHiddenModeAnErrorIsReportedOnce() async throws {
+        let (modal, harness) = makeModal(mode: .hidden)
+        var calls: [String] = []
+        modal.onError = { calls.append("onError \($0)") }
+        modal.onFail = { calls.append("onFail") }
+        modal.onFinish = { calls.append("finish") }
+        try await until { try await harness.page("return window.fake && window.fake.executions") as? Int == 1 }
+
+        try await harness.widgetCalls("onError", ["challenge-failed"])
+        try await harness.page("window.fake.rejectExecution(new Error('challenge-failed'))")
+        try await harness.widgetCalls("onFail")
+        try await until { calls.last == "onFail" }
+
+        #expect(calls == ["onError challenge-failed", "finish", "onFail"])
+    }
+
+    @Test func createsTheWidgetOnlyWhenItsViewLoads() {
+        var made = 0
+        let modal = CaptchaFoxModalViewController(mode: .hidden) {
+            made += 1
+            return CaptchaFoxUIView(bridge: WidgetHarness().bridge)
+        }
+
+        #expect(made == 0)
+        modal.loadViewIfNeeded()
+        #expect(made == 1)
+    }
+
+    /// A modal whose widget runs on the harness's page; the harness's own events stop, the modal's callbacks report them.
+    private func makeModal(mode: CaptchaFoxConfiguration.Mode?) -> (CaptchaFoxModalViewController, WidgetHarness) {
+        let harness = WidgetHarness(configuration: WidgetHarness.configuration(mode: mode))
+        let modal = CaptchaFoxModalViewController(mode: mode) {
+            CaptchaFoxUIView(bridge: harness.bridge)
+        }
+        modal.loadViewIfNeeded()
+        return (modal, harness)
+    }
+}
