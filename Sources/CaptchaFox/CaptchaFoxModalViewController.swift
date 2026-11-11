@@ -3,6 +3,8 @@ import UIKit
 /// Shows the CaptchaFox widget over the current screen. Present it with `present(_:animated:)`; it shows a loading
 /// indicator until the widget is loaded and dismisses itself on verify, error and close. In hidden mode it starts the
 /// verification once the widget is loaded and shows the widget only when a challenge opens.
+///
+/// Set `backdropColor`, `headerView`, `footerView` and `loadingView` before presenting it.
 @MainActor
 public final class CaptchaFoxModalViewController: UIViewController {
     public var onLoad: (() -> Void)?
@@ -19,8 +21,25 @@ public final class CaptchaFoxModalViewController: UIViewController {
     /// Called when a challenge opens, also in hidden mode.
     public var onChallengeOpen: (() -> Void)?
 
+    /// The colour over the presenting screen; by default black at 60 % opacity.
+    public var backdropColor = UIColor.black.withAlphaComponent(0.6) {
+        didSet {
+            if isViewLoaded {
+                view.backgroundColor = backdropColor
+            }
+        }
+    }
+    /// A view above the widget, such as a title.
+    public var headerView: UIView?
+    /// A view below the widget.
+    public var footerView: UIView?
+    /// Shown in place of the activity indicator while the widget loads, and in hidden mode until the token arrives.
+    public var loadingView: UIView?
+
     /// Called once when the modal dismisses itself.
     var onFinish: (() -> Void)?
+    /// View controllers whose views are the header, footer or loading view, added as children when the view loads.
+    var hostedControllers: [UIViewController] = []
 
     /// Created when the view loads, so that nothing runs before the modal is presented.
     private(set) var widget: CaptchaFoxUIView?
@@ -81,22 +100,57 @@ public final class CaptchaFoxModalViewController: UIViewController {
             self?.challengeOpened()
         }
 
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        widget.translatesAutoresizingMaskIntoConstraints = false
-        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = backdropColor
+        for controller in hostedControllers {
+            addChild(controller)
+        }
+
+        let loading = loadingView ?? loadingIndicator
         loadingIndicator.color = .white
         loadingIndicator.startAnimating()
-        // Below the transparent web view: in hidden mode the challenge covers the indicator, which shows again when the
-        // widget closes the challenge and checks the answer before it reports the token.
-        view.addSubview(loadingIndicator)
-        view.addSubview(widget)
+        // Below the transparent web view: in hidden mode the challenge covers the loading view, which shows again when
+        // the widget closes the challenge and checks the answer before it reports the token.
+        let guide = view.safeAreaLayoutGuide
+        for subview in [loading, widget] {
+            subview.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(subview)
+        }
         NSLayoutConstraint.activate([
-            widget.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            widget.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            widget.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            widget.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            widget.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+            widget.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+            loading.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loading.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+
+        var widgetTop = guide.topAnchor
+        if let headerView {
+            add(headerView, between: guide)
+            headerView.topAnchor.constraint(equalTo: guide.topAnchor).isActive = true
+            widgetTop = headerView.bottomAnchor
+        }
+        var widgetBottom = guide.bottomAnchor
+        if let footerView {
+            add(footerView, between: guide)
+            footerView.bottomAnchor.constraint(equalTo: guide.bottomAnchor).isActive = true
+            widgetBottom = footerView.topAnchor
+        }
+        widget.topAnchor.constraint(equalTo: widgetTop).isActive = true
+        widget.bottomAnchor.constraint(equalTo: widgetBottom).isActive = true
+
+        for controller in hostedControllers {
+            controller.didMove(toParent: self)
+        }
+    }
+
+    /// A header or footer spans the safe area's width at its own height.
+    private func add(_ subview: UIView, between guide: UILayoutGuide) {
+        subview.translatesAutoresizingMaskIntoConstraints = false
+        subview.setContentHuggingPriority(.required, for: .vertical)
+        subview.setContentCompressionResistancePriority(.required, for: .vertical)
+        view.addSubview(subview)
+        NSLayoutConstraint.activate([
+            subview.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+            subview.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
         ])
     }
 
@@ -151,6 +205,7 @@ public final class CaptchaFoxModalViewController: UIViewController {
     private func showWidget() {
         if !isHiddenMode {
             loadingIndicator.stopAnimating()
+            loadingView?.isHidden = true
         }
         widget?.alpha = 1
     }

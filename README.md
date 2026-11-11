@@ -97,6 +97,34 @@ var body: some View {
 }
 ```
 
+The modal takes a backdrop colour, a header above and a footer below the widget, and a view in place of its loading
+indicator. In UIKit, set them before presenting it:
+
+```swift
+captcha.backdropColor = UIColor.black.withAlphaComponent(0.85)
+captcha.headerView = titleLabel
+captcha.footerView = footerLabel
+captcha.loadingView = loadingView
+```
+
+In SwiftUI:
+
+```swift
+.captchaFoxModal(
+    isPresented: $showsCaptcha,
+    configuration: configuration,
+    backdropColor: .black.opacity(0.85),
+    header: { Text("Verify you are human").foregroundColor(.white).padding() },
+    footer: { Text("Protected by CaptchaFox").foregroundColor(.white).padding() },
+    loading: { ProgressView() },
+    onVerify: { token in
+        // Send the token to your backend.
+    }
+)
+```
+
+The backdrop is black at 60 % opacity by default, and the loading view an activity indicator.
+
 ### View
 
 `CaptchaFoxUIView` (UIKit) and `CaptchaFoxView` (SwiftUI) put the widget in your layout. `CaptchaFoxView` supports

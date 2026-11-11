@@ -101,12 +101,57 @@ struct ModalTests {
         #expect(made == 1)
     }
 
+    @Test func placesTheHeaderAboveAndTheFooterBelowTheWidgetOnItsBackdrop() throws {
+        let header = UILabel()
+        header.text = "Header"
+        let footer = UILabel()
+        footer.text = "Footer"
+        let (modal, _) = makeModal(mode: nil) { modal in
+            modal.backdropColor = .red
+            modal.headerView = header
+            modal.footerView = footer
+        }
+        modal.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
+        modal.view.layoutIfNeeded()
+
+        let widget = try #require(modal.widget)
+        #expect(modal.view.backgroundColor == .red)
+        #expect(header.frame.height > 0 && footer.frame.height > 0)
+        // Within half a point: Auto Layout rounds to pixels.
+        #expect(abs(header.frame.maxY - widget.frame.minY) < 0.5)
+        #expect(abs(footer.frame.minY - widget.frame.maxY) < 0.5)
+        #expect(widget.frame.height > 0)
+    }
+
+    @Test func aLoadingViewTakesTheIndicatorsPlaceBelowTheWidget() async throws {
+        let loadingView = UILabel()
+        var loaded = false
+        let (modal, _) = makeModal(mode: nil) { modal in
+            modal.loadingView = loadingView
+            modal.onLoad = { loaded = true }
+        }
+
+        let widget = try #require(modal.widget)
+        #expect(modal.loadingIndicator.superview == nil)
+        let loadingIndex = try #require(modal.view.subviews.firstIndex(of: loadingView))
+        let widgetIndex = try #require(modal.view.subviews.firstIndex(of: widget))
+        #expect(loadingIndex < widgetIndex)
+        #expect(!loadingView.isHidden)
+
+        try await until { loaded }
+        #expect(loadingView.isHidden)
+    }
+
     /// A modal whose widget runs on the harness's page; the harness's own events stop, the modal's callbacks report them.
-    private func makeModal(mode: CaptchaFoxConfiguration.Mode?) -> (CaptchaFoxModalViewController, WidgetHarness) {
+    private func makeModal(
+        mode: CaptchaFoxConfiguration.Mode?,
+        before load: (CaptchaFoxModalViewController) -> Void = { _ in }
+    ) -> (CaptchaFoxModalViewController, WidgetHarness) {
         let harness = WidgetHarness(configuration: WidgetHarness.configuration(mode: mode))
         let modal = CaptchaFoxModalViewController(mode: mode) {
             CaptchaFoxUIView(bridge: harness.bridge)
         }
+        load(modal)
         modal.loadViewIfNeeded()
         return (modal, harness)
     }

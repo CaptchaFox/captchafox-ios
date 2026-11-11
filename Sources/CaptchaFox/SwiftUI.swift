@@ -45,15 +45,24 @@ extension View {
     /// `CaptchaFoxModalViewController` does, and sets `isPresented` to false when it dismisses itself.
     ///
     /// - Parameters:
+    ///   - backdropColor: The colour over the current screen.
+    ///   - header: A view above the widget, such as a title.
+    ///   - footer: A view below the widget.
+    ///   - loading: Shown in place of the activity indicator while the widget loads, and in hidden mode until the token
+    ///     arrives; `EmptyView` keeps the activity indicator.
     ///   - onVerify: Called with the token, which your backend verifies.
     ///   - onError: Called with the widget's error message.
     ///   - onFail: Called when the visitor failed the challenge.
     ///   - onExpire: Called when the token expired before it was used.
     ///   - onClose: Called when the visitor closed the challenge.
     ///   - onChallengeOpen: Called when a challenge opens, also in hidden mode.
-    public func captchaFoxModal(
+    public func captchaFoxModal<Header: View, Footer: View, Loading: View>(
         isPresented: Binding<Bool>,
         configuration: CaptchaFoxConfiguration,
+        backdropColor: Color = Color.black.opacity(0.6),
+        @ViewBuilder header: () -> Header = { EmptyView() },
+        @ViewBuilder footer: () -> Footer = { EmptyView() },
+        @ViewBuilder loading: () -> Loading = { EmptyView() },
         onLoad: (() -> Void)? = nil,
         onVerify: ((String) -> Void)? = nil,
         onError: ((String) -> Void)? = nil,
@@ -65,6 +74,12 @@ extension View {
         background(ModalPresenter(
             isPresented: isPresented,
             configuration: configuration,
+            style: ModalStyle(
+                backdropColor: UIColor(backdropColor),
+                header: ModalStyle.content(header()),
+                footer: ModalStyle.content(footer()),
+                loading: ModalStyle.content(loading())
+            ),
             callbacks: Callbacks(
                 onLoad: onLoad,
                 onVerify: onVerify,
@@ -123,14 +138,29 @@ private struct WidgetRepresentable: UIViewRepresentable {
     }
 }
 
+/// The modal's backdrop colour and the SwiftUI views it shows in place of none or of its activity indicator.
+private struct ModalStyle {
+    var backdropColor: UIColor
+    var header: AnyView?
+    var footer: AnyView?
+    var loading: AnyView?
+
+    /// `nil` for `EmptyView`, which stands for no view or the default one.
+    static func content<Content: View>(_ view: Content) -> AnyView? {
+        Content.self == EmptyView.self ? nil : AnyView(view)
+    }
+}
+
 /// Presents the modal from an invisible view controller in the hierarchy of the view it is attached to.
 private struct ModalPresenter: UIViewControllerRepresentable {
     @Binding var isPresented: Bool
     let configuration: CaptchaFoxConfiguration
+    let style: ModalStyle
     let callbacks: Callbacks
 
     final class Coordinator {
         var modal: CaptchaFoxModalViewController?
+        var hosts: [KeyPath<ModalStyle, AnyView?>: UIHostingController<AnyView>] = [:]
     }
 
     func makeCoordinator() -> Coordinator {
@@ -145,6 +175,12 @@ private struct ModalPresenter: UIViewControllerRepresentable {
         let coordinator = context.coordinator
         if let modal = coordinator.modal {
             callbacks.assign(to: modal)
+            modal.backdropColor = style.backdropColor
+            for (keyPath, host) in coordinator.hosts {
+                if let content = style[keyPath: keyPath] {
+                    host.rootView = content
+                }
+            }
             if !isPresented {
                 coordinator.modal = nil
                 modal.dismiss(animated: true)
@@ -158,6 +194,27 @@ private struct ModalPresenter: UIViewControllerRepresentable {
 
         let modal = CaptchaFoxModalViewController(configuration: configuration)
         callbacks.assign(to: modal)
+        modal.backdropColor = style.backdropColor
+        coordinator.hosts = [:]
+        let slots: [(KeyPath<ModalStyle, AnyView?>, ReferenceWritableKeyPath<CaptchaFoxModalViewController, UIView?>)] = [
+            (\.header, \.headerView),
+            (\.footer, \.footerView),
+            (\.loading, \.loadingView),
+        ]
+        for (keyPath, viewPath) in slots {
+            guard let content = style[keyPath: keyPath] else {
+                continue
+            }
+
+            let host = UIHostingController(rootView: content)
+            host.view.backgroundColor = .clear
+            if #available(iOS 16.0, *) {
+                host.sizingOptions = .intrinsicContentSize
+            }
+            coordinator.hosts[keyPath] = host
+            modal.hostedControllers.append(host)
+            modal[keyPath: viewPath] = host.view
+        }
         let isPresented = $isPresented
         modal.onFinish = { [weak coordinator] in
             coordinator?.modal = nil

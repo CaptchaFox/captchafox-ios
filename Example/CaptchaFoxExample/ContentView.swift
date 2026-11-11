@@ -24,6 +24,7 @@ struct ContentView: View {
 
     @State private var key = Key.passes
     @State private var showsModal = false
+    @State private var isStyled = false
     @State private var result = "No result yet"
     // The widget's events, each with the seconds since the last load or Verify.
     @State private var events: [String] = []
@@ -98,6 +99,7 @@ struct ContentView: View {
 
                 if key != .custom || !appliedSiteKey.isEmpty {
                     Section("Modal, hidden mode") {
+                        Toggle("Header, footer, darker backdrop", isOn: $isStyled)
                         Button("Verify") {
                             start = Date()
                             events = []
@@ -143,6 +145,23 @@ struct ContentView: View {
         .captchaFoxModal(
             isPresented: $showsModal,
             configuration: configuration(mode: .hidden),
+            backdropColor: .black.opacity(isStyled ? 0.85 : 0.6),
+            header: {
+                if isStyled {
+                    Text("Verify you are human")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                }
+            },
+            footer: {
+                if isStyled {
+                    Text("Protected by CaptchaFox")
+                        .font(.footnote)
+                        .foregroundColor(.white.opacity(0.7))
+                        .padding()
+                }
+            },
             onLoad: { log("load") },
             onVerify: { result = "Token: \($0)"; log("verify") },
             onError: { result = "Error: \($0)"; log("error: \($0)") },

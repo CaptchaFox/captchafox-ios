@@ -77,6 +77,13 @@ struct PublicInterfaceTests {
         captcha.onClose = {}
         captcha.onChallengeOpen = {}
         #expect(captcha.modalPresentationStyle == .overFullScreen)
+
+        #expect(captcha.backdropColor == UIColor.black.withAlphaComponent(0.6))
+        #expect(captcha.headerView == nil && captcha.footerView == nil && captcha.loadingView == nil)
+        captcha.backdropColor = .black
+        captcha.headerView = UILabel()
+        captcha.footerView = UILabel()
+        captcha.loadingView = UIActivityIndicatorView()
     }
 
     @Test func swiftUI() {
@@ -105,8 +112,17 @@ struct PublicInterfaceTests {
             CaptchaFoxView(configuration: configuration)
         }
         .captchaFoxModal(isPresented: .constant(false), configuration: configuration)
+        let styled = Text("Sign up").captchaFoxModal(
+            isPresented: .constant(false),
+            configuration: configuration,
+            backdropColor: .black.opacity(0.8),
+            header: { Text("Verify") },
+            footer: { Text("Protected by CaptchaFox") },
+            loading: { ProgressView() },
+            onVerify: { (_: String) in }
+        )
 
-        _ = (view, modal, minimal)
+        _ = (view, modal, minimal, styled)
     }
 
     @Test func errors() async {
