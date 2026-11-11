@@ -1,13 +1,12 @@
 # CaptchaFox for iOS
 
-Official [CaptchaFox](https://captchafox.com) integration for iOS. It shows the CaptchaFox widget in iOS apps and hands
-its token to the app, whose backend verifies it.
+Official [CaptchaFox](https://captchafox.com) integration for iOS. It shows the CaptchaFox widget in iOS apps and generates a token for backend verification.
 
 ## Compatibility
 
-| iOS | Library |
-|---|---|
-| 15, 16, 17, 18, 26, 27 | 1.x |
+| iOS                    | Library |
+| ---------------------- | ------- |
+| 15, 16, 17, 18, 26, 27 | 1.x     |
 
 Requires iOS 15 or later.
 
@@ -48,13 +47,13 @@ let configuration = CaptchaFoxConfiguration(
 
 ### Options
 
-| Option | Default | Meaning |
-|---|---|---|
-| `siteKey` | | The site key. |
-| `baseURL` | | The URL the widget is loaded with. Its host must be the site's domain in the portal. |
-| `mode` | the widget's | `.inline`, `.popup` or `.hidden`. Hidden stays invisible until a challenge opens. |
-| `theme` | `.light` | `.light` or `.dark`. |
-| `language` | detected | A language code, such as `en` or `de`. |
+| Option     | Default      | Meaning                                                                              |
+| ---------- | ------------ | ------------------------------------------------------------------------------------ |
+| `siteKey`  |              | The site key.                                                                        |
+| `baseURL`  |              | The URL the widget is loaded with. Its host must be the site's domain in the portal. |
+| `mode`     | the widget's | `.inline`, `.popup` or `.hidden`. Hidden stays invisible until a challenge opens.    |
+| `theme`    | `.light`     | `.light` or `.dark`.                                                                 |
+| `language` | detected     | A language code, such as `en` or `de`.                                               |
 
 Options left `nil` use the widget's default.
 
@@ -118,14 +117,14 @@ do {
 
 `execute()` returns the token or throws a `CaptchaFoxError` with one of these codes:
 
-| Code | When |
-|---|---|
-| `.widget` | The widget reported an error, see `message`. |
-| `.closed` | The user closed the challenge. |
-| `.superseded` | `execute()` was called again. |
-| `.reset` | `reset()` was called. |
-| `.notLoaded` | It was called before `onLoad`, for example because the script failed to load. |
-| `.webContentTerminated` | iOS ended the web view's process; the widget reloads. |
+| Code                    | When                                                                          |
+| ----------------------- | ----------------------------------------------------------------------------- |
+| `.widget`               | The widget reported an error, see `message`.                                  |
+| `.closed`               | The user closed the challenge.                                                |
+| `.superseded`           | `execute()` was called again.                                                 |
+| `.reset`                | `reset()` was called.                                                         |
+| `.notLoaded`            | It was called before `onLoad`, for example because the script failed to load. |
+| `.webContentTerminated` | iOS ended the web view's process; the widget reloads.                         |
 
 If the calling task is cancelled, it throws `CancellationError`. Minor versions may add codes, so a `switch` over `code`
 needs a `default` case.
@@ -134,15 +133,15 @@ needs a `default` case.
 
 The modal, both views and `captchaFoxModal` take the same callbacks, called on the main thread:
 
-| Callback | Called when |
-|---|---|
-| `onLoad` | The widget is rendered. |
-| `onVerify(token)` | The user is verified. |
+| Callback           | Called when                                          |
+| ------------------ | ---------------------------------------------------- |
+| `onLoad`           | The widget is rendered.                              |
+| `onVerify(token)`  | The user is verified.                                |
 | `onError(message)` | An error occurs, for example the widget cannot load. |
-| `onFail` | The user failed the challenge. |
-| `onExpire` | The token expired before it was used. |
-| `onClose` | The user closed the challenge. |
-| `onChallengeOpen` | A challenge opens, also in hidden mode. |
+| `onFail`           | The user failed the challenge.                       |
+| `onExpire`         | The token expired before it was used.                |
+| `onClose`          | The user closed the challenge.                       |
+| `onChallengeOpen`  | A challenge opens, also in hidden mode.              |
 
 ## Operation
 
