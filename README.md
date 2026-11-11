@@ -63,6 +63,9 @@ Send the token to your backend with the request it protects. The backend verifie
 [Verify the Response Token on the Server](https://docs.captchafox.com/getting-started#verify-the-response-token-on-the-server))
 and processes the request only if the verification passes.
 
+[`Example/`](Example) holds a SwiftUI app that uses the package with the public test keys or your own site key. Open
+`Example/CaptchaFoxExample.xcodeproj` in Xcode and run it.
+
 ### Modal
 
 Shows the widget over the current screen and closes on verify, error or close. In hidden mode it starts the

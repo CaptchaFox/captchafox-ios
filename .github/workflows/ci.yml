@@ -19,3 +19,6 @@ jobs:
 
       - name: Test
         run: make test
+
+      - name: Build the example app
+        run: make example

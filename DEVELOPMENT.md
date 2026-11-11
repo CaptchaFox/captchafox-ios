@@ -5,6 +5,11 @@
 Xcode with an iOS Simulator runtime, and `jq`. CI uses the Xcode that `DEVELOPER_DIR` in `.github/workflows/ci.yml`
 names. The package has no dependencies.
 
+## Build
+
+`make example` builds the example app in `Example/` for the iOS Simulator; CI builds it for every push to `main` and
+every pull request. To run it, open `Example/CaptchaFoxExample.xcodeproj` in Xcode, choose a simulator and run.
+
 ## Test
 
 | Command | Runs |
