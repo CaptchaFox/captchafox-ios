@@ -8,7 +8,7 @@ Official [CaptchaFox](https://captchafox.com) integration for iOS. It shows the 
 | ---------------------- | ------- |
 | 15, 16, 17, 18, 26, 27 | 1.x     |
 
-Requires iOS 15 or later.
+Requires iOS 15 or later and Xcode 16 or later.
 
 ## Installation
 
