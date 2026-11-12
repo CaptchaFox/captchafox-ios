@@ -69,8 +69,8 @@ struct LiveTests {
         try await withThrowingTaskGroup(of: T.self) { group in
             group.addTask(operation: operation)
             group.addTask {
-                // On the first boot of a new simulator device, WebKit's processes take more than a minute to launch.
-                try await Task.sleep(nanoseconds: 180_000_000_000)
+                // On the first boot of a new simulator device, WebKit's processes take minutes to launch.
+                try await Task.sleep(nanoseconds: 600_000_000_000)
                 throw LiveTimeout()
             }
             let result = try await group.next()!
