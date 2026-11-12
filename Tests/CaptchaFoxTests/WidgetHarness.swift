@@ -139,8 +139,7 @@ func keepAwake(_ webView: WKWebView) {
     }
 }
 
-/// Waits until the condition holds. On the first boot of a new simulator device, WebKit's processes take more than a
-/// minute to launch.
+/// Waits until the condition holds. The timeout counts once WebKit has loaded its first page.
 @MainActor
 func until(
     timeout: TimeInterval = 180,
@@ -148,12 +147,42 @@ func until(
     line: Int = #line,
     _ condition: () async throws -> Bool
 ) async throws {
+    try await WebKitWarmUp.ready()
     let deadline = Date().addingTimeInterval(timeout)
     while try await !condition() {
         guard Date() < deadline else {
             throw WaitTimeout(file: file, line: line)
         }
         try await Task.sleep(nanoseconds: 10_000_000)
+    }
+}
+
+/// On the first boot of a new simulator device, WebKit takes minutes to load its first page, on CI more than three,
+/// and a first web view may never load. Before any wait starts counting, one widget page loads, in a new web view every
+/// two minutes, for at most ten.
+@MainActor
+enum WebKitWarmUp {
+    private static var warmUp: Task<Bool, Never>?
+
+    static func ready() async throws {
+        let warmUp = warmUp ?? Task {
+            let deadline = Date().addingTimeInterval(600)
+            while Date() < deadline {
+                let harness = WidgetHarness()
+                let retry = min(deadline, Date().addingTimeInterval(120))
+                while Date() < retry {
+                    if harness.events.contains(.load) {
+                        return true
+                    }
+                    try? await Task.sleep(nanoseconds: 200_000_000)
+                }
+            }
+            return false
+        }
+        self.warmUp = warmUp
+        guard await warmUp.value else {
+            throw WaitTimeout(file: #fileID, line: #line)
+        }
     }
 }
 

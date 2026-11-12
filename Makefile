@@ -4,7 +4,8 @@ ifndef SIMULATOR
 SIMULATOR := $(shell scripts/simulator.sh)
 endif
 # The tests build for the package's deployment target, as CI's Xcode does; a newer Xcode raises it for test targets.
-XCODEBUILD = xcodebuild -scheme CaptchaFox -destination 'platform=iOS Simulator,id=$(SIMULATOR)' IPHONEOS_DEPLOYMENT_TARGET=15.0
+# They run one at a time: web views that start together on a new simulator device can stall WebKit.
+XCODEBUILD = xcodebuild -scheme CaptchaFox -destination 'platform=iOS Simulator,id=$(SIMULATOR)' IPHONEOS_DEPLOYMENT_TARGET=15.0 -parallel-testing-enabled NO
 
 .PHONY: test test-live example
 

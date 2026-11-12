@@ -142,27 +142,41 @@ struct ModalTests {
         #expect(loadingView.isHidden)
     }
 
-    @Test func staysForAMomentAfterVerify() async throws {
-        var calls: [String] = []
+    @Test func dismissesTheDelayAfterVerify() async throws {
+        var verifiedAt: Date?
+        var finishedAt: Date?
         let (modal, harness) = makeModal(mode: nil) { modal in
             modal.dismissDelayAfterVerify = 0.3
-            modal.onLoad = { calls.append("onLoad") }
+            modal.onVerify = { _ in verifiedAt = Date() }
+            modal.onFinish = { finishedAt = Date() }
+        }
+        try await until { modal.widget?.alpha == 1 }
+
+        try await harness.widgetCalls("onVerify", ["token-1"])
+        try await until { finishedAt != nil }
+
+        let verified = try #require(verifiedAt)
+        let finished = try #require(finishedAt)
+        #expect(finished.timeIntervalSince(verified) >= 0.3)
+        withExtendedLifetime(modal) {}
+    }
+
+    @Test func aCloseDuringTheDelayIsPassedOnButFinishesNothing() async throws {
+        var calls: [String] = []
+        let (modal, harness) = makeModal(mode: nil) { modal in
+            // Longer than the test runs, so that only a close could finish the modal.
+            modal.dismissDelayAfterVerify = 3600
             modal.onVerify = { _ in calls.append("onVerify") }
             modal.onClose = { calls.append("onClose") }
             modal.onFinish = { calls.append("finish") }
         }
-        try await until { calls == ["onLoad"] }
+        try await until { modal.widget?.alpha == 1 }
 
         try await harness.widgetCalls("onVerify", ["token-1"])
-        try await until { calls.count == 2 }
-        // The widget's close in the meantime finishes the modal no sooner, and not twice.
         try await harness.widgetCalls("onClose")
-        try await until { calls.count == 3 }
-        #expect(calls == ["onLoad", "onVerify", "onClose"])
+        try await until { calls.contains("onClose") }
 
-        try await until { calls.count == 4 }
-        #expect(calls == ["onLoad", "onVerify", "onClose", "finish"])
-        // The modal is used only through its callbacks; without this, Swift may release it before they come.
+        #expect(calls == ["onVerify", "onClose"])
         withExtendedLifetime(modal) {}
     }
 
