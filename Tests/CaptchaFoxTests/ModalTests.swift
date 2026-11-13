@@ -180,6 +180,22 @@ struct ModalTests {
         withExtendedLifetime(modal) {}
     }
 
+    @Test func aChallengeStaysInTheModal() async throws {
+        let (modal, harness) = makeModal(mode: nil)
+        let widget = try #require(modal.widget)
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        window.addSubview(modal.view)
+        var challengeOpened = false
+        modal.onChallengeOpen = { challengeOpened = true }
+        try await until { widget.alpha == 1 }
+
+        try await harness.widgetCalls("onChallengeOpen")
+        try await until { challengeOpened }
+
+        #expect(window.subviews.elementsEqual([modal.view], by: ===))
+        #expect(harness.bridge.webView.superview === widget)
+    }
+
     @Test func theWidgetShowsNoIndicatorOfItsOwn() throws {
         let (modal, _) = makeModal(mode: nil)
 

@@ -1,3 +1,7 @@
+## Unreleased
+
+- A challenge opened from `CaptchaFoxUIView` or `CaptchaFoxView` shows over the whole window instead of cut to the view's size.
+
 ## 1.0.0
 
 - Show the CaptchaFox widget in iOS apps and hand its token to the app: `CaptchaFoxUIView` (UIKit), `CaptchaFoxView`
