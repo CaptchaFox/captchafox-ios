@@ -139,7 +139,7 @@ func keepAwake(_ webView: WKWebView) {
     }
 }
 
-/// Waits until the condition holds. The timeout counts once WebKit has loaded its first page.
+/// Waits until the condition holds.
 @MainActor
 func until(
     timeout: TimeInterval = 180,
@@ -147,7 +147,6 @@ func until(
     line: Int = #line,
     _ condition: () async throws -> Bool
 ) async throws {
-    try await WebKitWarmUp.ready()
     let deadline = Date().addingTimeInterval(timeout)
     while try await !condition() {
         guard Date() < deadline else {
@@ -158,8 +157,8 @@ func until(
 }
 
 /// On the first boot of a new simulator device, WebKit takes minutes to load its first page, on CI more than three,
-/// and a first web view may never load. Before any wait starts counting, one widget page loads, in a new web view every
-/// two minutes, for at most ten.
+/// and a web view that starts then may never load, even after others have. So one widget page loads, in a new web view
+/// every two minutes for at most ten, before any test creates its own: each suite awaits it in its `init`.
 @MainActor
 enum WebKitWarmUp {
     private static var warmUp: Task<Bool, Never>?

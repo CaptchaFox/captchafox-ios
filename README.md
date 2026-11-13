@@ -131,7 +131,8 @@ is called at once either way.
 
 ### View
 
-`CaptchaFoxUIView` (UIKit) and `CaptchaFoxView` (SwiftUI) put the widget in your layout. `CaptchaFoxView` supports
+`CaptchaFoxUIView` (UIKit) and `CaptchaFoxView` (SwiftUI) put the widget in your layout. While a challenge is open, they
+show it over the whole window on the modal's default backdrop, and keep their size. `CaptchaFoxView` supports
 inline and popup; for hidden mode in SwiftUI, use `captchaFoxModal`. Both show an activity indicator until the widget
 has loaded; turn it off with `showsLoadingIndicator = false` (UIKit) or `showsLoadingIndicator: false` (SwiftUI). `CaptchaFoxUIView` also has `execute()`, which
 returns the token, and `reset()`:

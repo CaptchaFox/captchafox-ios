@@ -22,7 +22,7 @@ public final class CaptchaFoxModalViewController: UIViewController {
     public var onChallengeOpen: (() -> Void)?
 
     /// The colour over the presenting screen; by default black at 60 % opacity.
-    public var backdropColor = UIColor.black.withAlphaComponent(0.6) {
+    public var backdropColor = CaptchaFoxModalViewController.defaultBackdropColor {
         didSet {
             if isViewLoaded {
                 view.backgroundColor = backdropColor
@@ -38,6 +38,9 @@ public final class CaptchaFoxModalViewController: UIViewController {
     /// How many seconds the modal stays after verify, so that the visitor sees the widget's success state; 0.5 by
     /// default, 0 dismisses it at once. `onVerify` is called at once either way.
     public var dismissDelayAfterVerify: TimeInterval = 0.5
+
+    /// Also the backdrop of the overlay in which `CaptchaFoxUIView` shows an opened challenge.
+    static let defaultBackdropColor = UIColor.black.withAlphaComponent(0.6)
 
     /// Called once when the modal dismisses itself.
     var onFinish: (() -> Void)?
@@ -79,6 +82,8 @@ public final class CaptchaFoxModalViewController: UIViewController {
         self.widget = widget
         // The modal's own loading view stands in for the widget's.
         widget.showsLoadingIndicator = false
+        // The modal fills the screen already.
+        widget.showsChallengeFullScreen = false
         widget.alpha = 0
         widget.onLoad = { [weak self] in
             self?.widgetLoaded()

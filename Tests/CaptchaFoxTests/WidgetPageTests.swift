@@ -4,6 +4,10 @@ import Testing
 
 @MainActor
 struct WidgetPageTests {
+    init() async throws {
+        try await WebKitWarmUp.ready()
+    }
+
     @Test func theOptionsReachTheWidgetAsData() async throws {
         // `<!--<script>` puts the HTML parser into a state in which even an escaped `</script>` no longer ends the element.
         let siteKey = #"sk_"</script><!--<script>window.injected = true</script>"#
