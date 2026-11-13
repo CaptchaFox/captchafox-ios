@@ -5,6 +5,10 @@ import WebKit
 
 @MainActor
 struct ViewTests {
+    init() async throws {
+        try await WebKitWarmUp.ready()
+    }
+
     @Test func showsAnIndicatorUntilTheWidgetIsLoaded() async throws {
         let harness = WidgetHarness()
         let view = CaptchaFoxUIView(bridge: harness.bridge)

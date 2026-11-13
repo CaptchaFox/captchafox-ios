@@ -4,6 +4,10 @@ import UIKit
 
 @MainActor
 struct ModalTests {
+    init() async throws {
+        try await WebKitWarmUp.ready()
+    }
+
     @Test func showsTheWidgetOnceItIsLoaded() async throws {
         let (modal, harness) = makeModal(mode: nil)
         var loaded = false
