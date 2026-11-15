@@ -4,6 +4,10 @@ import Testing
 
 @MainActor
 struct ExecuteTests {
+    init() async throws {
+        try await WebKitWarmUp.ready()
+    }
+
     @Test func returnsTheTokenOnVerify() async throws {
         let harness = try await WidgetHarness.loaded()
         let execution = try await harness.startExecution()

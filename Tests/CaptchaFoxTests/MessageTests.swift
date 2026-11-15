@@ -3,6 +3,10 @@ import Testing
 
 @MainActor
 struct MessageTests {
+    init() async throws {
+        try await WebKitWarmUp.ready()
+    }
+
     @Test func eachEventReachesTheView() async throws {
         let harness = WidgetHarness()
         let view = CaptchaFoxUIView(bridge: harness.bridge)

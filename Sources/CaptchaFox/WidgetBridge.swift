@@ -7,6 +7,8 @@ import WebKit
 final class WidgetBridge: NSObject {
     let webView: WKWebView
     var onEvent: (WidgetEvent) -> Void = { _ in }
+    /// Called when the web view's process ended; the page loads again, without an open challenge.
+    var onWebContentTerminated: () -> Void = {}
 
     private let page: String
     private let baseURL: URL
@@ -171,6 +173,7 @@ extension WidgetBridge: WKNavigationDelegate {
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         isLoaded = false
         settle(.failure(CaptchaFoxError(.webContentTerminated)))
+        onWebContentTerminated()
         loadPage()
     }
 }

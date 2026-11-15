@@ -19,6 +19,7 @@ every pull request. To run it, open `Example/CaptchaFoxExample.xcodeproj` in Xco
 
 Both run on the simulator device `CaptchaFox SDK Tests`, which `scripts/simulator.sh` creates when it is absent (an
 iPhone on the newest available iOS runtime), or on the one that `SIMULATOR=<udid>` names. On the first boot of a new
-device, WebKit takes minutes to load its first page, and a first web view may never load: the tests first load one
-widget page, in a new web view every two minutes for up to ten, and then wait up to three minutes for each page. They run one at a time: web views that start together on a new device can stall
+device, WebKit takes minutes to load its first page, and a first web view may never load: before any test
+creates its own web view, one widget page loads, in a new web view every two minutes for up to ten; the tests then wait
+up to three minutes for each page. They run one at a time: web views that start together on a new device can stall
 WebKit until every wait runs out.
