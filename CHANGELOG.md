@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.1
 
 - A challenge opened from `CaptchaFoxUIView` or `CaptchaFoxView` shows over the whole window instead of cut to the view's size.
 
