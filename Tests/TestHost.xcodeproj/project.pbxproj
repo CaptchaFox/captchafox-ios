@@ -1,0 +1,552 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B1000000000000000000010B /* CaptchaFox in Frameworks */ = {isa = PBXBuildFile; productRef = B1000000000000000000010A /* CaptchaFox */; };
+		B1000000000000000000020B /* CaptchaFox in Frameworks */ = {isa = PBXBuildFile; productRef = B1000000000000000000020A /* CaptchaFox */; };
+		B1000000000000000000030B /* CaptchaFox in Frameworks */ = {isa = PBXBuildFile; productRef = B1000000000000000000030A /* CaptchaFox */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B1000000000000000000010C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B10000000000000000000006;
+			remoteInfo = TestHost;
+		};
+		B1000000000000000000020C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B10000000000000000000006;
+			remoteInfo = TestHost;
+		};
+		B1000000000000000000030C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B10000000000000000000006;
+			remoteInfo = TestHost;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B10000000000000000000005 /* TestHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000102 /* CaptchaFoxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CaptchaFoxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000202 /* PublicInterfaceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PublicInterfaceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000302 /* LiveTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiveTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B10000000000000000000004 /* TestHost */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TestHost;
+			sourceTree = "<group>";
+		};
+		B10000000000000000000101 /* CaptchaFoxTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CaptchaFoxTests;
+			sourceTree = "<group>";
+		};
+		B10000000000000000000201 /* PublicInterfaceTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = PublicInterfaceTests;
+			sourceTree = "<group>";
+		};
+		B10000000000000000000301 /* LiveTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = LiveTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B10000000000000000000008 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000105 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1000000000000000000010B /* CaptchaFox in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000205 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1000000000000000000020B /* CaptchaFox in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000305 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1000000000000000000030B /* CaptchaFox in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B10000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000004 /* TestHost */,
+				B10000000000000000000101 /* CaptchaFoxTests */,
+				B10000000000000000000201 /* PublicInterfaceTests */,
+				B10000000000000000000301 /* LiveTests */,
+				B10000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B10000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000005 /* TestHost.app */,
+				B10000000000000000000102 /* CaptchaFoxTests.xctest */,
+				B10000000000000000000202 /* PublicInterfaceTests.xctest */,
+				B10000000000000000000302 /* LiveTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B10000000000000000000006 /* TestHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B1000000000000000000000B /* Build configuration list for PBXNativeTarget "TestHost" */;
+			buildPhases = (
+				B10000000000000000000007 /* Sources */,
+				B10000000000000000000008 /* Frameworks */,
+				B10000000000000000000009 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B10000000000000000000004 /* TestHost */,
+			);
+			name = TestHost;
+			productName = TestHost;
+			productReference = B10000000000000000000005 /* TestHost.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B10000000000000000000103 /* CaptchaFoxTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000107 /* Build configuration list for PBXNativeTarget "CaptchaFoxTests" */;
+			buildPhases = (
+				B10000000000000000000104 /* Sources */,
+				B10000000000000000000105 /* Frameworks */,
+				B10000000000000000000106 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B1000000000000000000010D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B10000000000000000000101 /* CaptchaFoxTests */,
+			);
+			name = CaptchaFoxTests;
+			packageProductDependencies = (
+				B1000000000000000000010A /* CaptchaFox */,
+			);
+			productName = CaptchaFoxTests;
+			productReference = B10000000000000000000102 /* CaptchaFoxTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B10000000000000000000203 /* PublicInterfaceTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000207 /* Build configuration list for PBXNativeTarget "PublicInterfaceTests" */;
+			buildPhases = (
+				B10000000000000000000204 /* Sources */,
+				B10000000000000000000205 /* Frameworks */,
+				B10000000000000000000206 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B1000000000000000000020D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B10000000000000000000201 /* PublicInterfaceTests */,
+			);
+			name = PublicInterfaceTests;
+			packageProductDependencies = (
+				B1000000000000000000020A /* CaptchaFox */,
+			);
+			productName = PublicInterfaceTests;
+			productReference = B10000000000000000000202 /* PublicInterfaceTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B10000000000000000000303 /* LiveTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000307 /* Build configuration list for PBXNativeTarget "LiveTests" */;
+			buildPhases = (
+				B10000000000000000000304 /* Sources */,
+				B10000000000000000000305 /* Frameworks */,
+				B10000000000000000000306 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B1000000000000000000030D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B10000000000000000000301 /* LiveTests */,
+			);
+			name = LiveTests;
+			packageProductDependencies = (
+				B1000000000000000000030A /* CaptchaFox */,
+			);
+			productName = LiveTests;
+			productReference = B10000000000000000000302 /* LiveTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					B10000000000000000000103 = {
+						TestTargetID = B10000000000000000000006;
+					};
+					B10000000000000000000203 = {
+						TestTargetID = B10000000000000000000006;
+					};
+					B10000000000000000000303 = {
+						TestTargetID = B10000000000000000000006;
+					};
+				};
+			};
+			buildConfigurationList = B1000000000000000000000A /* Build configuration list for PBXProject "TestHost" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B10000000000000000000002;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B10000000000000000000010 /* XCLocalSwiftPackageReference ".." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B10000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B10000000000000000000006 /* TestHost */,
+				B10000000000000000000103 /* CaptchaFoxTests */,
+				B10000000000000000000203 /* PublicInterfaceTests */,
+				B10000000000000000000303 /* LiveTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B10000000000000000000009 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000106 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000206 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000306 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B10000000000000000000007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000104 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000204 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000304 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B1000000000000000000010D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B10000000000000000000006 /* TestHost */;
+			targetProxy = B1000000000000000000010C /* PBXContainerItemProxy */;
+		};
+		B1000000000000000000020D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B10000000000000000000006 /* TestHost */;
+			targetProxy = B1000000000000000000020C /* PBXContainerItemProxy */;
+		};
+		B1000000000000000000030D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B10000000000000000000006 /* TestHost */;
+			targetProxy = B1000000000000000000030C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B1000000000000000000000C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B1000000000000000000000D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B1000000000000000000000E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.captchafox.testhost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		B1000000000000000000000F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.captchafox.testhost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		B10000000000000000000108 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.captchafox.captchafoxtests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TestHost";
+			};
+			name = Debug;
+		};
+		B10000000000000000000109 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.captchafox.captchafoxtests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TestHost";
+			};
+			name = Release;
+		};
+		B10000000000000000000208 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.captchafox.publicinterfacetests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TestHost";
+			};
+			name = Debug;
+		};
+		B10000000000000000000209 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.captchafox.publicinterfacetests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TestHost";
+			};
+			name = Release;
+		};
+		B10000000000000000000308 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.captchafox.livetests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TestHost";
+			};
+			name = Debug;
+		};
+		B10000000000000000000309 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.captchafox.livetests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TestHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TestHost";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B1000000000000000000000A /* Build configuration list for PBXProject "TestHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B1000000000000000000000C /* Debug */,
+				B1000000000000000000000D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B1000000000000000000000B /* Build configuration list for PBXNativeTarget "TestHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B1000000000000000000000E /* Debug */,
+				B1000000000000000000000F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000107 /* Build configuration list for PBXNativeTarget "CaptchaFoxTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000108 /* Debug */,
+				B10000000000000000000109 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000207 /* Build configuration list for PBXNativeTarget "PublicInterfaceTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000208 /* Debug */,
+				B10000000000000000000209 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000307 /* Build configuration list for PBXNativeTarget "LiveTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000308 /* Debug */,
+				B10000000000000000000309 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B10000000000000000000010 /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B1000000000000000000010A /* CaptchaFox */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CaptchaFox;
+		};
+		B1000000000000000000020A /* CaptchaFox */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CaptchaFox;
+		};
+		B1000000000000000000030A /* CaptchaFox */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CaptchaFox;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = B10000000000000000000001 /* Project object */;
+}

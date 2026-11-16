@@ -5,10 +5,6 @@ import WebKit
 
 @MainActor
 struct NavigationTests {
-    init() async throws {
-        try await WebKitWarmUp.ready()
-    }
-
     @Test func theMainFrameDoesNotLeaveThePage() async throws {
         let away = RecordingSchemeHandler()
         let configuration = WKWebViewConfiguration()

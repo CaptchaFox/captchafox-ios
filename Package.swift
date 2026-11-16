@@ -9,11 +9,7 @@ let package = Package(
         .library(name: "CaptchaFox", targets: ["CaptchaFox"]),
     ],
     targets: [
+        // The tests are targets of Tests/TestHost.xcodeproj: WebKit runs pages reliably only in an app.
         .target(name: "CaptchaFox"),
-        .testTarget(name: "CaptchaFoxTests", dependencies: ["CaptchaFox"]),
-        // Uses the package only through `import CaptchaFox`, as an app does.
-        .testTarget(name: "PublicInterfaceTests", dependencies: ["CaptchaFox"]),
-        // Loads the widget from cdn.captchafox.com; run apart from the other tests.
-        .testTarget(name: "LiveTests", dependencies: ["CaptchaFox"]),
     ]
 )
