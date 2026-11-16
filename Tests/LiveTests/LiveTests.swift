@@ -1,11 +1,21 @@
 import CaptchaFox
 import Foundation
 import Testing
-import WebKit
+import UIKit
 
 /// The widget from cdn.captchafox.com with the public test site keys, which work with any base URL.
 @MainActor
 struct LiveTests {
+    /// The widget shows in a window of the app, as in an app: the process of a web view that shows nowhere stalls.
+    private let window: UIWindow
+
+    init() throws {
+        let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        window = UIWindow(windowScene: scene)
+        window.rootViewController = UIViewController()
+        window.makeKeyAndVisible()
+    }
+
     @Test func theTestKeyThatPassesGivesATokenWithoutInteraction() async throws {
         let (view, events) = try await loadedWidget(siteKey: "sk_11111111000000001111111100000000")
 
@@ -29,7 +39,8 @@ struct LiveTests {
     private func loadedWidget(siteKey: String) async throws -> (CaptchaFoxUIView, Events) {
         let configuration = CaptchaFoxConfiguration(siteKey: siteKey, baseURL: URL(string: "https://example.com/")!, mode: .hidden)
         let view = CaptchaFoxUIView(configuration: configuration)
-        keepAwake(view)
+        view.frame = CGRect(x: 20, y: 100, width: 300, height: 80)
+        window.rootViewController?.view.addSubview(view)
         let events = Events()
         view.onLoad = { events.names.append("load") }
         view.onVerify = { _ in events.names.append("verify") }
@@ -46,23 +57,6 @@ struct LiveTests {
         }
         #expect(events.names == ["load"])
         return (view, events)
-    }
-
-    /// The test process is no foreground app, so WebKit freezes the web view's process after some seconds; on the first
-    /// run after the simulator booted, the widget has not answered by then. A call into the page every 200 ms keeps the
-    /// process awake, as an app in the foreground does.
-    private func keepAwake(_ view: CaptchaFoxUIView) {
-        guard let webView = view.subviews.compactMap({ $0 as? WKWebView }).first else {
-            Issue.record("CaptchaFoxUIView shows a WKWebView")
-            return
-        }
-
-        Task { [weak webView] in
-            while let webView {
-                _ = try? await webView.evaluateJavaScript("0")
-                try? await Task.sleep(nanoseconds: 200_000_000)
-            }
-        }
     }
 
     private func withTimeout<T: Sendable>(_ operation: @escaping @MainActor @Sendable () async throws -> T) async throws -> T {

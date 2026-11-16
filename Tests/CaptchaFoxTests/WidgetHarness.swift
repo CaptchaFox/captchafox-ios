@@ -29,7 +29,6 @@ final class WidgetHarness {
         bridge.onEvent = { [weak self] event in
             self?.events.append(event)
         }
-        keepAwake(bridge.webView)
     }
 
     /// The URLs the bridge opened in the system browser.
@@ -126,19 +125,6 @@ final class Execution {
     }
 }
 
-/// The test process is no foreground app, so WebKit freezes a web view's process after some seconds; on the first boot
-/// of a simulator, the page is not loaded by then. A call into the page every 200 ms keeps the process awake, as an app
-/// in the foreground does.
-@MainActor
-func keepAwake(_ webView: WKWebView) {
-    Task { [weak webView] in
-        while let webView {
-            _ = try? await webView.evaluateJavaScript("0")
-            try? await Task.sleep(nanoseconds: 200_000_000)
-        }
-    }
-}
-
 /// Waits until the condition holds.
 @MainActor
 func until(
@@ -153,35 +139,6 @@ func until(
             throw WaitTimeout(file: file, line: line)
         }
         try await Task.sleep(nanoseconds: 10_000_000)
-    }
-}
-
-/// On the first boot of a new simulator device, WebKit takes minutes to load its first page, on CI more than three,
-/// and a web view that starts then may never load, even after others have. So one widget page loads, in a new web view
-/// every two minutes for at most ten, before any test creates its own: each suite awaits it in its `init`.
-@MainActor
-enum WebKitWarmUp {
-    private static var warmUp: Task<Bool, Never>?
-
-    static func ready() async throws {
-        let warmUp = warmUp ?? Task {
-            let deadline = Date().addingTimeInterval(600)
-            while Date() < deadline {
-                let harness = WidgetHarness()
-                let retry = min(deadline, Date().addingTimeInterval(120))
-                while Date() < retry {
-                    if harness.events.contains(.load) {
-                        return true
-                    }
-                    try? await Task.sleep(nanoseconds: 200_000_000)
-                }
-            }
-            return false
-        }
-        self.warmUp = warmUp
-        guard await warmUp.value else {
-            throw WaitTimeout(file: #fileID, line: #line)
-        }
     }
 }
 

@@ -5,10 +5,6 @@ import WebKit
 
 @MainActor
 struct ViewTests {
-    init() async throws {
-        try await WebKitWarmUp.ready()
-    }
-
     @Test func showsAnIndicatorUntilTheWidgetIsLoaded() async throws {
         let harness = WidgetHarness()
         let view = CaptchaFoxUIView(bridge: harness.bridge)
@@ -112,7 +108,10 @@ struct ViewTests {
     @Test func anEndedChallengeLeavesTheAppsWindowAsItWas() async throws {
         let shown = try await ShownView()
         let sheet = UIViewController()
-        shown.root.present(sheet, animated: false)
+        // In an app, the presentation adds its last view to the window only after `present` returns.
+        await withCheckedContinuation { presented in
+            shown.root.present(sheet, animated: false) { presented.resume() }
+        }
         let windowViews = shown.window.subviews
         let rootViews = shown.root.view.subviews
 
